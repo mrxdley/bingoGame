@@ -18,12 +18,13 @@ namespace Bingo
 {
     public partial class Form1 : Form
     {
-        int ballX = 0; //setup ball positions
-        int ballY = 0;
-
         string ballID; //i think this is redundant, but program breaks without it
 
-        int count = 91; //must have this existing - amount of balls + 1
+        static int rows = 9; //configurable by user
+        static int cols = 10;
+
+        int count = (cols * rows) + 1;
+        int totalBalls = (cols * rows); //IMPORTANT - these are different. count is for text drawing, totalBalls is just for, well, the total number of balls
 
         Random bingoNumber = new Random(); //generates the number - add seed later
 
@@ -40,10 +41,6 @@ namespace Bingo
         public void DrawBalls(bool init, int ballX, int ballY)
         {
             drawBut.Enabled = true; //lets you draw again after reset - ugly, works
-
-            //image setup
-            int rows = 9;
-            int cols = 10;
 
             PictureBox[,] balls = new PictureBox[rows, cols]; //creates an array of pictureboxes
 
@@ -75,14 +72,9 @@ namespace Bingo
                         //layers them correctly. apparently WinForms doesn't play nice with transparent backgrounds. Qt FTW
                         balls[r, c].BringToFront();
                     }
-                    //
-                    if (!init && r == ballX && c == ballY) //ballx = 4, y =0
-                    {
-                        //Console.WriteLine(ballX.ToString());
-                        //Console.WriteLine(ballY.ToString());
-                        //Console.WriteLine(ballX.ToString() + ballY.ToString());
-                        //debug shit ^^^
 
+                    if (!init && r == ballX && c == ballY)
+                    {
                         string ballPosition = ballX.ToString() + ballY.ToString(); //easier to read
 
                         if (ballPosition == "00")
@@ -91,8 +83,8 @@ namespace Bingo
                             break;
                         }
 
-                        if (Convert.ToInt32(ballPosition) % 10 == 0)
-                        { //messy way to check for values of 10 - could also do ballY == 0? yeah i probably should
+                        if (Convert.ToInt32(ballPosition) % 10 == 0) // or (ballY == 0) {}
+                        { //messy way to check for values of 10 - could also do ballY == 0? yeah i probably should, but this works
                             this.Controls[90- Convert.ToInt32(ballPosition)].BackColor = Color.Red;
                         }
                         else
@@ -108,13 +100,13 @@ namespace Bingo
         public void DrawNumber()
         {
             //initialises the number
-            int number = bingoNumber.Next(90);
+            int number = bingoNumber.Next(totalBalls);
 
             //quick validation - have we already called every number?
-            if (pastNumberList.Items.Count >= 90)
+            if (pastNumberList.Items.Count >= totalBalls)
             {
                 //crashes the program???
-                for (int i = 0; i <= 90; i++)
+                for (int i = 0; i <= totalBalls; i++)
                 {
                     this.Controls[i].BackColor = Color.Green;
                 }
@@ -137,7 +129,7 @@ namespace Bingo
                 count = number + 1; //keeps the text on the balls updated
 
                 //makes the ball red - "init" is false
-                if (number > 9)
+                if (number > 9) //checks for one digit numbers.
                 {
                     DrawBalls(false, number / 10, number - ((number / 10) * 10));
                     //looks messy - isnt.
@@ -150,11 +142,11 @@ namespace Bingo
                 }
 
                 //this is all messy code - balls are drawn from the bottom up
-                // 0 is 90 and vice versa - this just flips them around
-                if (number == 0 && !pastNumberList.Items.Contains("90"))
+                // 0 is the total and vice versa - this just flips them around
+                if (number == 0 && !pastNumberList.Items.Contains(totalBalls))
                 {
-                    pastNumberList.Items.Add("90");
-                    curNum.Text = "90";
+                    pastNumberList.Items.Add(totalBalls);
+                    curNum.Text = totalBalls.ToString();
                 }
                 else
                 {
@@ -165,7 +157,7 @@ namespace Bingo
             }
             else
             {
-                if (pastNumberList.Items.Count >= 90)
+                if (pastNumberList.Items.Count >= totalBalls)
                 {
                     drawBut.Text = "Game Over";
                     count = -1; //stops graphics loop
@@ -182,9 +174,9 @@ namespace Bingo
         private void numbers_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
             Graphics g = e.Graphics;
-            if (pastNumberList.Items.Contains("90") && !found90)            //more 0/90 boilerplate
+            if (pastNumberList.Items.Contains(totalBalls) && !found90)            //more 0/total filler  
             {
-                g.DrawString("90", DefaultFont, System.Drawing.Brushes.Black, new Point(13, 13));
+                g.DrawString(totalBalls.ToString(), DefaultFont, System.Drawing.Brushes.Black, new Point(13, 13));
                 found90 = true;
             }
 
