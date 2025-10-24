@@ -26,7 +26,8 @@ namespace Bingo
         int count = (cols * rows) + 1;
         int totalBalls = (cols * rows); //IMPORTANT - these are different. count is for text drawing, totalBalls is just for, well, the total number of balls
 
-        Random bingoNumber = new Random(); //generates the number - add seed later
+        Random bingoNumber = new Random(Guid.NewGuid().GetHashCode()); //generates the number - add seed later
+        //added seed based on hardware identifier of device
 
         string StartPath = Application.StartupPath; //makes it able to run in any directory, with any image
 
