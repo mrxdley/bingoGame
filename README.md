@@ -1,7 +1,7 @@
 # Basic .NET Bingo Game
 
 This is a *very basic* bingo game.
-It is all generated during runtime, allowing for the potential for many millions of balls - or only 5 - with a tiny bit of tweaking.
+All graphics are generated during runtime, allowing for the potential for many millions of balls - or only 5 - with a tiny bit of tweaking.
 
 ### Program Structure
 
